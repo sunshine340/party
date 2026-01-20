@@ -1,0 +1,14 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "io.github.sunshine340.twa",
+            "sha256_cert_fingerprints": [
+                "6A:E0:84:73:9E:20:42:69:28:57:B8:09:80:68:2A:4B:5F:B0:60:1D:69:BC:3F:C8:38:25:0F:A6:F1:10:B4:73"
+            ]
+        }
+    }
+]
