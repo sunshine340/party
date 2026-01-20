@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">PartyGames</string>
+    <string name="title_activity_main">PartyGames</string>
+    <string name="package_name">com.party.games</string>
+    <string name="custom_url_scheme">com.party.games</string>
+</resources>

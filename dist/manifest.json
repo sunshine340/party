@@ -1,0 +1,19 @@
+{
+    "name": "聚会游戏助手",
+    "short_name": "聚会游戏",
+    "description": "无需裁判的聚会游戏助手 - 狼人杀、谁是卧底、你画我猜",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#0f0f23",
+    "theme_color": "#6366f1",
+    "icons": [
+        {
+            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ],
+    "categories": ["games", "entertainment"],
+    "lang": "zh-CN"
+}

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="description" content="聚会游戏助手 - 狼人杀、谁是卧底、你画我猜，无需裁判，随时开玩">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>聚会游戏助手</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 主页 -->
+        <div id="home-page" class="page active">
+            <div class="hero">
+                <div class="logo">🎲</div>
+                <h1>聚会游戏助手</h1>
+                <p class="tagline">无需裁判 · 随时开玩</p>
+            </div>
+            
+            <div class="game-grid">
+                <div class="game-card werewolf" onclick="app.selectGame('werewolf')">
+                    <div class="game-icon">🐺</div>
+                    <h2>狼人杀 2.0</h2>
+                    <p>目击狼人杀 · 碰杀玩法</p>
+                    <span class="player-count">3-12人</span>
+                </div>
+                
+                <div class="game-card undercover" onclick="app.selectGame('undercover')">
+                    <div class="game-icon">🕵️</div>
+                    <h2>谁是卧底</h2>
+                    <p>词语推理 · 找出卧底</p>
+                    <span class="player-count">3-10人</span>
+                </div>
+                
+                <div class="game-card charades" onclick="app.selectGame('charades')">
+                    <div class="game-icon">🎭</div>
+                    <h2>你画我猜</h2>
+                    <p>比划猜词 · 欢乐无限</p>
+                    <span class="player-count">3人以上</span>
+                </div>
+            </div>
+            
+            <footer class="home-footer">
+                <p>📱 添加到主屏幕可离线使用</p>
+            </footer>
+        </div>
+
+        <!-- 狼人杀设置页 -->
+        <div id="werewolf-setup" class="page">
+            <header class="page-header">
+                <button class="back-btn" onclick="app.goHome()">←</button>
+                <h1>🐺 狼人杀 2.0</h1>
+            </header>
+            
+            <div class="setup-content">
+                <div class="rules-card">
+                    <h3>📜 游戏规则</h3>
+                    <ul>
+                        <li><strong>碰杀</strong>：狼人轻碰目标玩家即淘汰</li>
+                        <li><strong>目击杀</strong>：狼人对视后同时看向目标即淘汰</li>
+                        <li>被杀玩家用<strong>手指戳脸颊</strong>表示出局</li>
+                        <li>狼人淘汰超半数小羊即获胜</li>
+                    </ul>
+                </div>
+                
+                <div class="setting-group">
+                    <label>玩家人数</label>
+                    <div class="stepper">
+                        <button onclick="werewolf.adjustPlayers(-1)">−</button>
+                        <span id="werewolf-player-count">6</span>
+                        <button onclick="werewolf.adjustPlayers(1)">+</button>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <label>狼人数量</label>
+                    <div class="stepper">
+                        <button onclick="werewolf.adjustWolves(-1)">−</button>
+                        <span id="werewolf-wolf-count">2</span>
+                        <button onclick="werewolf.adjustWolves(1)">+</button>
+                    </div>
+                    <p class="hint" id="werewolf-hint">建议：6人游戏配置2只狼人</p>
+                </div>
+                
+                <button class="primary-btn" onclick="werewolf.startGame()">
+                    开始分配身份 →
+                </button>
+            </div>
+        </div>
+
+        <!-- 身份查看页（通用） -->
+        <div id="identity-view" class="page">
+            <header class="page-header">
+                <button class="back-btn" onclick="app.confirmExit()">×</button>
+                <h1 id="identity-title">查看身份</h1>
+            </header>
+            
+            <div class="identity-content">
+                <div class="player-indicator">
+                    <span>玩家 <strong id="current-player-num">1</strong></span>
+                    <span class="total">/ <span id="total-player-num">6</span></span>
+                </div>
+                
+                <div class="identity-card" id="identity-card" onclick="app.toggleIdentity()">
+                    <div class="card-front">
+                        <div class="tap-hint">👆</div>
+                        <p>点击查看身份</p>
+                        <p class="small">请确保只有自己能看到</p>
+                    </div>
+                    <div class="card-back" id="identity-back">
+                        <div class="identity-icon" id="identity-icon">🐺</div>
+                        <h2 id="identity-role">狼人</h2>
+                        <p id="identity-desc">你是狼人，寻找同伴，淘汰小羊</p>
+                    </div>
+                </div>
+                
+                <div class="identity-actions">
+                    <button class="secondary-btn" onclick="app.prevPlayer()" id="prev-player-btn" style="visibility: hidden;">
+                        ← 上一位
+                    </button>
+                    <button class="primary-btn" onclick="app.nextPlayer()" id="next-player-btn">
+                        下一位 →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏进行中页 -->
+        <div id="game-active" class="page">
+            <header class="page-header">
+                <button class="back-btn" onclick="app.confirmEnd()">×</button>
+                <h1 id="active-game-title">游戏进行中</h1>
+            </header>
+            
+            <div class="active-content">
+                <div class="game-status" id="game-status">
+                    <!-- 动态内容 -->
+                </div>
+                
+                <div class="action-buttons" id="game-actions">
+                    <!-- 动态按钮 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 谁是卧底设置页 -->
+        <div id="undercover-setup" class="page">
+            <header class="page-header">
+                <button class="back-btn" onclick="app.goHome()">←</button>
+                <h1>🕵️ 谁是卧底</h1>
+            </header>
+            
+            <div class="setup-content">
+                <div class="rules-card">
+                    <h3>📜 游戏规则</h3>
+                    <ul>
+                        <li>每人获得一个<strong>词语</strong>（卧底词语略有不同）</li>
+                        <li>轮流用一句话<strong>描述</strong>词语（不能说出原词）</li>
+                        <li>每轮<strong>投票</strong>淘汰嫌疑人</li>
+                        <li>卧底存活到最后即获胜</li>
+                    </ul>
+                </div>
+                
+                <div class="setting-group">
+                    <label>玩家人数</label>
+                    <div class="stepper">
+                        <button onclick="undercover.adjustPlayers(-1)">−</button>
+                        <span id="undercover-player-count">6</span>
+                        <button onclick="undercover.adjustPlayers(1)">+</button>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <label>卧底数量</label>
+                    <div class="stepper">
+                        <button onclick="undercover.adjustSpies(-1)">−</button>
+                        <span id="undercover-spy-count">1</span>
+                        <button onclick="undercover.adjustSpies(1)">+</button>
+                    </div>
+                </div>
+                
+                <div class="setting-group toggle-group">
+                    <label>启用白板（无词玩家）</label>
+                    <label class="toggle">
+                        <input type="checkbox" id="undercover-blank" onchange="undercover.toggleBlank()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <button class="primary-btn" onclick="undercover.startGame()">
+                    开始分配词语 →
+                </button>
+            </div>
+        </div>
+
+        <!-- 你画我猜设置页 -->
+        <div id="charades-setup" class="page">
+            <header class="page-header">
+                <button class="back-btn" onclick="app.goHome()">←</button>
+                <h1>🎭 你画我猜</h1>
+            </header>
+            
+            <div class="setup-content">
+                <div class="rules-card">
+                    <h3>📜 游戏规则</h3>
+                    <ul>
+                        <li>表演者看词后用<strong>动作比划</strong>（不能说话）</li>
+                        <li>其他人<strong>猜测</strong>词语</li>
+                        <li>猜对得分，可跳过困难词</li>
+                        <li>轮流表演，得分最高者获胜</li>
+                    </ul>
+                </div>
+                
+                <div class="setting-group">
+                    <label>倒计时（秒）</label>
+                    <div class="stepper">
+                        <button onclick="charades.adjustTime(-10)">−</button>
+                        <span id="charades-time">60</span>
+                        <button onclick="charades.adjustTime(10)">+</button>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <label>词语难度</label>
+                    <div class="difficulty-selector">
+                        <button class="diff-btn active" onclick="charades.setDifficulty('easy')" id="diff-easy">简单</button>
+                        <button class="diff-btn" onclick="charades.setDifficulty('medium')" id="diff-medium">中等</button>
+                        <button class="diff-btn" onclick="charades.setDifficulty('hard')" id="diff-hard">困难</button>
+                        <button class="diff-btn" onclick="charades.setDifficulty('all')" id="diff-all">全部</button>
+                    </div>
+                </div>
+                
+                <button class="primary-btn" onclick="charades.startGame()">
+                    开始游戏 →
+                </button>
+            </div>
+        </div>
+
+        <!-- 你画我猜游戏页 -->
+        <div id="charades-game" class="page">
+            <header class="page-header charades-header">
+                <button class="back-btn" onclick="app.confirmEnd()">×</button>
+                <div class="timer" id="charades-timer">60</div>
+                <div class="score-display">得分: <span id="charades-score">0</span></div>
+            </header>
+            
+            <div class="charades-content">
+                <div class="word-card" id="word-card" onclick="charades.showWord()">
+                    <div class="word-front">
+                        <p>👆 点击查看词语</p>
+                    </div>
+                    <div class="word-back" id="word-back">
+                        <h2 id="current-word">苹果</h2>
+                    </div>
+                </div>
+                
+                <div class="charades-actions">
+                    <button class="skip-btn" onclick="charades.skipWord()">
+                        跳过 ⏭️
+                    </button>
+                    <button class="correct-btn" onclick="charades.correctWord()">
+                        猜对了 ✓
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏结束页 -->
+        <div id="game-over" class="page">
+            <div class="game-over-content">
+                <div class="result-icon" id="result-icon">🎉</div>
+                <h1 id="result-title">游戏结束</h1>
+                <p id="result-message">感谢参与！</p>
+                
+                <div class="result-stats" id="result-stats">
+                    <!-- 动态统计 -->
+                </div>
+                
+                <div class="game-over-actions">
+                    <button class="secondary-btn" onclick="app.restartGame()">
+                        再来一局
+                    </button>
+                    <button class="primary-btn" onclick="app.goHome()">
+                        返回首页
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认弹窗 -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">确认退出？</h3>
+            <p id="modal-message">游戏进度将丢失</p>
+            <div class="modal-actions">
+                <button class="secondary-btn" onclick="app.closeModal()">取消</button>
+                <button class="danger-btn" id="modal-confirm">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/werewolf.js"></script>
+    <script src="js/undercover.js"></script>
+    <script src="js/charades.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // 注册 Service Worker 以支持离线使用
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW registration failed'));
+            });
+        }
+    </script>
+</body>
+</html>
