@@ -1,0 +1,29 @@
+{
+  "name": "party-games",
+  "version": "1.0.0",
+  "description": "聚会游戏助手 - 无需裁判的聚会游戏应用",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo 'Static files ready'",
+    "cap:init": "npx cap init \"聚会游戏\" com.party.games --web-dir .",
+    "cap:add-android": "npx cap add android",
+    "cap:sync": "npx cap sync",
+    "cap:open": "npx cap open android"
+  },
+  "keywords": [
+    "party",
+    "games",
+    "werewolf",
+    "undercover",
+    "charades"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^4.8.1",
+    "@capacitor/cli": "^4.8.1",
+    "@capacitor/core": "^4.8.1"
+  },
+  "devDependencies": {}
+}

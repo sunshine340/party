@@ -1,0 +1,12 @@
+{
+  "appId": "com.party.games",
+  "appName": "聚会游戏",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": true
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
